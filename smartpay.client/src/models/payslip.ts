@@ -13,5 +13,5 @@ export interface PayslipResponse {
     grossIncome: number;
     incomeTax: number;
     netIncome: number;
-    superAmount: number;
+    super: number;
 }

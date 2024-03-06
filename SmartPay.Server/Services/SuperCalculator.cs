@@ -6,7 +6,7 @@ namespace SmartPay.Server.Services
 	{
 		public decimal CalculateSuper(decimal grossIncome, decimal superRate)
 		{
-			return grossIncome * superRate;
+			return Math.Round(grossIncome * (superRate/100),2,MidpointRounding.AwayFromZero); // Superrate in %
 		}
 	}
 }
