@@ -40,15 +40,14 @@ Open a CLI, navigate to an empty directory, and run: git clone https://github.co
 
 ##### Running the Application
 
-1. Navigate to the frontend project directory.
-2. Open a CLI and run the command: npm run dev
-3. In Visual Studio, right-click the SmartPay.Server project and set it as the Startup project.
-4. Press F5, or click the Debug tab and start debugging.
+1. In Visual Studio, right-click the SmartPay.Server project and set it as the Startup project.
+2. Press F5, or click the Debug tab and start debugging.
+3. Open another browser tab and enter https://localhost:7116. It will start the frontend via SPAProxy. 
 
 - The backend will be running on `https://localhost:7116`.
-- The frontend will be running on `https://localhost:5173`.
+- The frontend will be running on `https://localhost:5173`
 
-Make sure those ports are not occupied. The Vite server is configured to use a proxy to call `localhost:7116` for all `/api` calls to the backend.
+Make sure those ports are not occupied before running the application. 
 
 ###### Testing the Application
 1. Open your solution in Visual Studio.
