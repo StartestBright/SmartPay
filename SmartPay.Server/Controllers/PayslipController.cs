@@ -15,12 +15,12 @@ namespace SmartPay.Server.Controllers
 		private readonly IGrossIncomeCalculator _grossIncomeCalculator;
 		private readonly IIncomeTaxCalculator _incomeTaxCalculator;
 		private readonly ISuperCalculator _superCalculator;
-		public PaySlipController(IPayslipService paySlipService,IGrossIncomeCalculator grossIncomeCalculator,IIncomeTaxCalculator incomeTaxCalculator, ISuperCalculator superCalculator , IMapper mapper) { 
+		public PaySlipController(IPayslipService paySlipService,/*IGrossIncomeCalculator grossIncomeCalculator,IIncomeTaxCalculator incomeTaxCalculator, ISuperCalculator superCalculator */ IMapper mapper) { 
 			_paySlipService = paySlipService;					
 			_mapper = mapper;
-			_grossIncomeCalculator = grossIncomeCalculator;
-			_incomeTaxCalculator = incomeTaxCalculator;
-			_superCalculator	= superCalculator;
+			//_grossIncomeCalculator = grossIncomeCalculator;
+			//_incomeTaxCalculator = incomeTaxCalculator;
+			//_superCalculator	= superCalculator;
 		}
 
 		[HttpPost]
@@ -37,38 +37,42 @@ namespace SmartPay.Server.Controllers
 
 			try
 			{
-				var payslipDetails = _mapper.Map<PayslipDetailsDto>(requestDto); 
-				payslipDetails.GrossIncome = CalculateGrossIncome(requestDto.AnnualSalary);
-				payslipDetails.IncomeTax = CalculateIncomeTax(requestDto.AnnualSalary);
-				payslipDetails.NetIncome = payslipDetails.GrossIncome - payslipDetails.IncomeTax;
-				payslipDetails.Super =CalculateSuper(payslipDetails.GrossIncome, requestDto.SuperRate);
-				payslipDetails.PayPeriod = FormatPayPeriod(requestDto.Year, requestDto.Month);
-				return Ok(payslipDetails);
+				var payslipDetails = _mapper.Map<PayslipDetails>(requestDto);
+				_paySlipService.CalculatePayslip(payslipDetails);
+				var payslipDetailsDto = _mapper.Map<PayslipDetailsDto>(payslipDetails);
+
+				//var payslipDetails = _mapper.Map<PayslipDetailsDto>(requestDto); 
+				//payslipDetails.GrossIncome = CalculateGrossIncome(requestDto.AnnualSalary);
+				//payslipDetails.IncomeTax = CalculateIncomeTax(requestDto.AnnualSalary);
+				//payslipDetails.NetIncome = payslipDetails.GrossIncome - payslipDetails.IncomeTax;
+				//payslipDetails.Super =CalculateSuper(payslipDetails.GrossIncome, requestDto.SuperRate);
+				//payslipDetails.PayPeriod = FormatPayPeriod(requestDto.Year, requestDto.Month);
+				return Ok(payslipDetailsDto);
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, "An error occurred while generating the payslip. Please try again later.");
 			}
 		}
-		private string FormatPayPeriod(int year, int month)
-		{
-			var firstDay = new DateTime(year, month, 1).ToString("dd MMMM");
-			var lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month)).ToString("dd MMMM");
-			return $"{firstDay} – {lastDay}";
-		}
+		//private string FormatPayPeriod(int year, int month)
+		//{
+		//	var firstDay = new DateTime(year, month, 1).ToString("dd MMMM");
+		//	var lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month)).ToString("dd MMMM");
+		//	return $"{firstDay} – {lastDay}";
+		//}
 
-		private decimal CalculateGrossIncome(decimal salary)
-		{
-			return _grossIncomeCalculator.CalculateGrossIncome(salary);
-		}
-		private decimal CalculateIncomeTax(decimal salary)
-		{
-			return _incomeTaxCalculator.CalculateIncomeTax(salary);
-		}
-		private decimal CalculateSuper(decimal grossIncome, decimal superRate)
-		{
-			return _superCalculator.CalculateSuper(grossIncome, superRate);
-		}
+		//private decimal CalculateGrossIncome(decimal salary)
+		//{
+		//	return _grossIncomeCalculator.CalculateGrossIncome(salary);
+		//}
+		//private decimal CalculateIncomeTax(decimal salary)
+		//{
+		//	return _incomeTaxCalculator.CalculateIncomeTax(salary);
+		//}
+		//private decimal CalculateSuper(decimal grossIncome, decimal superRate)
+		//{
+		//	return _superCalculator.CalculateSuper(grossIncome, superRate);
+		//}
 
 	}
 }

@@ -8,9 +8,11 @@ namespace SmartPay.Server.Helper
 	{
 		public MappingProfiles()
 		{
-			CreateMap<PayslipRequestDto, PayslipDetailsDto>()
-			.ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-			.ForMember(dest => dest.PayPeriod, opt => opt.Ignore());
+			CreateMap<PayslipRequestDto, PayslipDetails>()
+			.ForMember(dest => dest.Employee, opt => opt.MapFrom(src => new Employee(src.FirstName, src.LastName, src.AnnualSalary, src.SuperRate)));
+
+			CreateMap<PayslipDetails, PayslipDetailsDto>();
+
 
 		}
 	}

@@ -26,6 +26,7 @@ builder.Services.AddScoped<IPayslipService, PayslipService>();
 builder.Services.AddScoped<IGrossIncomeCalculator,GrossIncomeCalculator>();
 builder.Services.AddScoped<IIncomeTaxCalculator,IncomeTaxCalculator>();
 builder.Services.AddScoped<ISuperCalculator,SuperCalculator>();
+builder.Services.AddScoped<IPayPeriodFormatter,PayPeriodFormatter>();
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 

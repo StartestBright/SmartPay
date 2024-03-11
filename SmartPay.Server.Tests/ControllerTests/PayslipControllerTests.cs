@@ -12,14 +12,11 @@ namespace SmartPay.Server.Tests.ControllerTests
 	{
 		private readonly Mock<IPayslipService> _paySlipService = new Mock<IPayslipService>();
 		private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-		private readonly Mock<IGrossIncomeCalculator> _grossIncomeCalculator = new Mock<IGrossIncomeCalculator>();
-		private readonly Mock<IIncomeTaxCalculator> _incomeTaxCalculator = new Mock<IIncomeTaxCalculator>();
-		private readonly Mock<ISuperCalculator> _superCalculator = new Mock<ISuperCalculator>();
 		private readonly PaySlipController _controller;
 
 		public PayslipControllerTests()
 		{
-			_controller = new PaySlipController(_paySlipService.Object, _grossIncomeCalculator.Object, _incomeTaxCalculator.Object, _superCalculator.Object, _mapper.Object);
+			_controller = new PaySlipController(_paySlipService.Object, _mapper.Object);
 		}
 
 		[Fact]
@@ -27,15 +24,15 @@ namespace SmartPay.Server.Tests.ControllerTests
 		{
 			// Arrange
 			PayslipRequestDto requestDto = new PayslipRequestDto {FirstName="John",LastName="Smith", AnnualSalary = 60050, SuperRate = 9.0M, Month = 3, Year = 2024 };
+			PayslipDetails payslipDetails = new PayslipDetails { Employee = new Employee("John", "Smith", 60050, 9.0M), Year = 2023, Month = 3, PayPeriod = "01 March - 31 March", GrossIncome = 5004.17M, IncomeTax = 919.58M,NetIncome = 4084.59M,Super=450.38M };
 			PayslipDetailsDto responseDto = new PayslipDetailsDto {Name="John Smith", GrossIncome = 5004.17M, IncomeTax = 919.58M, NetIncome = 4084.59M, Super = 450.38M, PayPeriod = "01 March - 31 March" };
 
-			_mapper.Setup(m => m.Map<PayslipDetailsDto>(requestDto)).Returns(responseDto);
-			_grossIncomeCalculator.Setup(c => c.CalculateGrossIncome(requestDto.AnnualSalary)).Returns(responseDto.GrossIncome);
-			_incomeTaxCalculator.Setup(c => c.CalculateIncomeTax(requestDto.AnnualSalary)).Returns(responseDto.IncomeTax);
-			_superCalculator.Setup(c => c.CalculateSuper(It.IsAny<decimal>(), requestDto.SuperRate)).Returns(responseDto.Super);
+			_mapper.Setup(m => m.Map<PayslipDetails>(It.IsAny<PayslipRequestDto>())).Returns(payslipDetails);
+			_mapper.Setup(m => m.Map<PayslipDetailsDto>(It.IsAny<PayslipDetails>())).Returns(responseDto);
+			_paySlipService.Setup(x => x.CalculatePayslip(It.IsAny<PayslipDetails>())).Returns(payslipDetails);
 
 			// Act
-			var result =  _controller.GeneratePayslip(requestDto);
+			var result = _controller.GeneratePayslip(requestDto);
 
 			// Assert
 			var okResult = Assert.IsType<OkObjectResult>(result.Result);
